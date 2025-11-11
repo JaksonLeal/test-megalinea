@@ -4,9 +4,14 @@
 
 <div class="container">
   <mat-card>
-    <mat-card-title>Request List</mat-card-title>
+    <button mat-raised-button color="primary" (click)="openNewRequestDialog()" *ngIf="userRole === 'REQUESTER'; else approverView">
+      + New Request
+    </button>
+    <ng-template #approverView>
+    <mat-card-title >Request List</mat-card-title>
+    </ng-template>
     <div class="table-container">
-      <table mat-table [dataSource]="requests" class="mat-elevation-z8">
+      <table mat-table *ngIf="userRole === 'APPROVER';else requesterView" [dataSource]="requests" class="mat-elevation-z8">
 
         <!-- Title -->
         <ng-container matColumnDef="title">
@@ -56,6 +61,11 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       </table>
+      <ng-template #requesterView>
+        <p style="text-align:center; margin-top: 20px;">
+          👋 You are logged in as <b>Requester</b>. You can create new requests but not approve them.
+        </p>
+      </ng-template>
     </div>
   </mat-card>
 </div>

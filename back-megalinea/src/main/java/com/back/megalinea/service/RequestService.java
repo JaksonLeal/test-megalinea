@@ -20,7 +20,8 @@ public class RequestService {
 	}
 
 	public Request getById(Long id) {
-		return repository.findById(id).orElseThrow(() -> new RuntimeException("Request not found"));
+		return repository.findById(id).orElseThrow( //si no es exitosa la consulta lanza una excepcion
+						() -> new RuntimeException("Request not found"));
 	}
 
 	public Request create(Request request) {
@@ -46,7 +47,7 @@ public class RequestService {
 		return repository.save(req);
 	}
 
-	public List<Request> getPendingRequestsByApprover(String approver) {
+	public List<Request> getPendingRequests(String approver) {
 		return repository.findByApproverAndStatus(approver, Request.RequestStatus.PENDING);
 	}
 }

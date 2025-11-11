@@ -9,6 +9,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DialogCommentComponent } from '../../shared/dialog-comment/dialog-comment.component';
+import { UserRole, UserService } from '../../services/user.service';
+import { NewRequestDialogComponent } from '../../components/new-request-dialog/new-request-dialog.component';
 
 @Component({
   selector: 'app-request-list',
@@ -21,30 +23,54 @@ import { DialogCommentComponent } from '../../shared/dialog-comment/dialog-comme
     MatToolbarModule,
     MatSnackBarModule,
     MatDialogModule,
-    DialogCommentComponent],
+  ],
   templateUrl: './request-list.component.html',
   styleUrl: './request-list.component.css'
 })
 export class RequestListComponent implements OnInit {
 
-
+  userRole: UserRole = 'REQUESTER';
   displayedColumns: string[] = ['title', 'requester', 'approver', 'type', 'status', 'actions'];
   requests: any[] = [];
 
   constructor(
     private requestService: RequestService,
+    private userService: UserService,
     private snack: MatSnackBar,
     private dialog: MatDialog) { }
 
   ngOnInit(): void {
-    this.requestService.getAll().subscribe({
-      next: (data) => {
-        this.requests = data;
-        console.log('Requests loaded:', data);
-      },
-      error: (err) => console.error('Error loading requests:', err)
+
+    this.userService.user$.subscribe(u => this.userRole = u.role);
+    this.loadRequests();
+
+  }
+
+  openNewRequestDialog(): void {
+    const dialogRef = this.dialog.open(NewRequestDialogComponent, {
+      width: '400px'
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const newRequest = {
+          ...result,
+          requester: 'jleal',  // Usuario requester
+          approver: 'amartinez',
+          status: 'PENDING'
+        };
+
+        this.requestService.create(newRequest).subscribe({
+          next: () => {
+            alert('Request created successfully');
+            this.loadRequests();
+          },
+          error: (err) => console.error('Error creating request:', err)
+        });
+      }
     });
   }
+
 
   approve(request: any) {
     const dialogRef = this.dialog.open(DialogCommentComponent, {
@@ -81,6 +107,16 @@ export class RequestListComponent implements OnInit {
           error: () => this.snack.open('Error rejecting request ⚠️', 'Close', { duration: 2000 })
         });
       }
+    });
+  }
+
+  loadRequests(): void {
+    this.requestService.getAll().subscribe({
+      next: (data) => {
+        this.requests = data;
+        console.log('Requests loaded:', data);
+      },
+      error: (err) => console.error('Error loading requests:', err)
     });
   }
 

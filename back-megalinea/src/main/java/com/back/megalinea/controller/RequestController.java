@@ -22,35 +22,35 @@ import com.back.megalinea.service.RequestService;
 public class RequestController {
 
 	@Autowired
-	private RequestService service;
+	private RequestService requestService;
 
 	@GetMapping
 	public List<Request> getAll() {
-		return service.getAll();
+		return requestService.getAll();
 	}
 
 	@GetMapping("/{id}")
 	public Request getById(@PathVariable Long id) {
-		return service.getById(id);
+		return requestService.getById(id);
 	}
 
 	@PostMapping
 	public Request create(@RequestBody Request request) {
-		return service.create(request);
+		return requestService.create(request);
 	}
 
 	@PutMapping("/{id}/approve")
 	public Request approve(@PathVariable Long id, @RequestParam String comment) {
-		return service.approve(id, comment);
+		return requestService.approve(id, comment);
 	}
 
 	@PutMapping("/{id}/reject")
 	public Request reject(@PathVariable Long id, @RequestParam String comment) {
-		return service.reject(id, comment);
+		return requestService.reject(id, comment);
 	}
 
 	@GetMapping("/pending/{approver}")
 	public List<Request> getPendingRequests(@PathVariable String approver) {
-		return service.getPendingRequestsByApprover(approver);
+		return requestService.getPendingRequests(approver);
 	}
 }

@@ -8,6 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:front-megalinea": "node dist/front-megalinea/server/server.mjs"
+    
   },
   "private": true,
   "dependencies": {
