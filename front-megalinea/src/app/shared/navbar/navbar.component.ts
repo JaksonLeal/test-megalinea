@@ -1,16 +1,15 @@
-import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { MatMenuModule } from '@angular/material/menu';
 import { RouterModule } from '@angular/router';
 import { RequestService } from '../../services/request.service';
-import { Subject } from 'rxjs';
-import { MatSelectModule } from '@angular/material/select';
 import { UserService, UserRole } from '../../services/user.service';
-import { MatMenuModule } from '@angular/material/menu';
-import { PLATFORM_ID } from '@angular/core';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -30,43 +29,60 @@ import { PLATFORM_ID } from '@angular/core';
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   pendingCount = 0;
-  pendingRequests: any[] = [];
-  selectedUser: UserRole = 'REQUESTER';
+  selectedUserRole: UserRole = 'REQUESTER';
+  selectedUserName = '';
+
+  approvers: string[] = [];
+  requesters: string[] = [];
+
   private destroy$ = new Subject<void>();
 
   constructor(
     private requestService: RequestService,
-    private userService: UserService,
-    @Inject(PLATFORM_ID) private platformId: Object
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      this.userService.user$.subscribe((user) => {
-        this.selectedUser = user.role;
+    this.loadUsersFromRequests();
 
-        if (user.role === 'APPROVER') {
-          this.loadPendingRequests(user.name);
-        } else {
-          this.pendingRequests = [];
-          this.pendingCount = 0;
-        }
-      });
-    }
+    this.userService.user$.subscribe((user) => {
+      this.selectedUserRole = user.role;
+      this.selectedUserName = user.name;
+
+      if (user.role === 'APPROVER') {
+        this.loadPendingRequests(user.name);
+      } else {
+        this.pendingCount = 0;
+      }
+    });
+  }
+
+  loadUsersFromRequests(): void {
+    this.requestService.getAll().subscribe({
+      next: (requests) => {
+        const approversSet = new Set<string>();
+        const requestersSet = new Set<string>();
+
+        requests.forEach((r) => {
+          if (r.approver) approversSet.add(r.approver);
+          if (r.requester) requestersSet.add(r.requester);
+        });
+
+        this.approvers = Array.from(approversSet);
+        this.requesters = Array.from(requestersSet);
+      },
+      error: (err) => console.error('Error loading users:', err)
+    });
   }
 
   loadPendingRequests(approver: string): void {
     this.requestService.getPendingRequests(approver).subscribe({
-      next: (data) => {
-        this.pendingRequests = data;
-        this.pendingCount = data.length;
-      },
+      next: (data) => (this.pendingCount = data.length),
       error: (err) => console.error('Error loading pending requests:', err)
     });
   }
 
-  changeUser(role: UserRole): void {
-    const name = role === 'APPROVER' ? 'amartinez' : 'jleal';
+  changeUser(role: UserRole, name: string): void {
     this.userService.setUser({ name, role });
   }
 

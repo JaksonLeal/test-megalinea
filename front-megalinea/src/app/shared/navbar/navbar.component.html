@@ -1,44 +1,31 @@
 <mat-toolbar color="primary">
-  <span style="cursor: pointer;" routerLink="/">Megalínea Requests</span>
+  <span>Megalínea Requests</span>
   <span class="spacer"></span>
 
-  <!-- Selector de usuario -->
-  <mat-form-field appearance="fill" style="width: 180px; margin-right: 16px;">
-    <mat-label>User</mat-label>
-    <mat-select [(value)]="selectedUser" (selectionChange)="changeUser($event.value)">
-      <mat-option value="REQUESTER">Requester</mat-option>
+  <!-- Rol -->
+  <mat-form-field appearance="fill">
+    <mat-label>User Role</mat-label>
+    <mat-select [(value)]="selectedUserRole" (selectionChange)="changeUser(selectedUserRole, selectedUserName)">
       <mat-option value="APPROVER">Approver</mat-option>
+      <mat-option value="REQUESTER">Requester</mat-option>
     </mat-select>
   </mat-form-field>
 
-  <!-- 🔔 Menú desplegable de notificaciones -->
-  <button
-    mat-icon-button
-    [matBadge]="pendingCount"
-    matBadgeColor="warn"
-    [matMenuTriggerFor]="notificationMenu"
-    aria-label="Notifications"
-    *ngIf="selectedUser === 'APPROVER'">
+  <!-- Nombre -->
+  <mat-form-field appearance="fill">
+    <mat-label>User Name</mat-label>
+    <mat-select
+      [(value)]="selectedUserName"
+      (selectionChange)="changeUser(selectedUserRole, selectedUserName)"
+      [disabled]="!selectedUserRole">
+      <mat-option *ngFor="let name of (selectedUserRole === 'APPROVER' ? approvers : requesters)" [value]="name">
+        {{ name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Notificación -->
+  <button mat-icon-button [matBadge]="pendingCount" matBadgeColor="warn">
     <mat-icon>notifications</mat-icon>
   </button>
-
-  <!-- Contenido del menú -->
-  <mat-menu #notificationMenu="matMenu">
-    <ng-container *ngIf="pendingRequests.length > 0; else noRequests">
-      <button
-        mat-menu-item
-        *ngFor="let req of pendingRequests"
-        [routerLink]="['/inbox']">
-        <mat-icon color="primary">assignment</mat-icon>
-        <span>{{ req.title }}</span>
-      </button>
-    </ng-container>
-
-    <ng-template #noRequests>
-      <button mat-menu-item disabled>
-        <mat-icon>done_all</mat-icon>
-        <span>No pending requests</span>
-      </button>
-    </ng-template>
-  </mat-menu>
 </mat-toolbar>

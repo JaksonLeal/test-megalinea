@@ -32,8 +32,4 @@ public class Request {
 	@Enumerated(EnumType.STRING)
 	private RequestStatus status = RequestStatus.PENDING;
 
-	public enum RequestStatus {
-		PENDING, APPROVED, REJECTED
-	}
-
 }
