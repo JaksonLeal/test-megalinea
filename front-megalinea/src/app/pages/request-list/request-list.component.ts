@@ -32,7 +32,6 @@ export class RequestListComponent implements OnInit {
   userRole: UserRole = 'REQUESTER';
   displayedColumns: string[] = ['title', 'requester', 'approver', 'type', 'status', 'actions'];
   requests: any[] = [];
-
   constructor(
     private requestService: RequestService,
     private userService: UserService,
@@ -53,16 +52,17 @@ export class RequestListComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
+        const currentUser = this.userService.getCurrentUser();
+
         const newRequest = {
           ...result,
-          requester: 'jleal',  // Usuario requester
-          approver: 'amartinez',
-          status: 'PENDING'
+          requester: currentUser.role === 'REQUESTER' ? currentUser.name : '',
+          approver: currentUser.role === 'APPROVER' ? currentUser.name : 'amartinez'
         };
 
         this.requestService.create(newRequest).subscribe({
           next: () => {
-            alert('Request created successfully');
+            this.snack.open('Solicitud creada con exito✅', 'Close', { duration: 2000 });
             this.loadRequests();
           },
           error: (err) => console.error('Error creating request:', err)
@@ -70,7 +70,6 @@ export class RequestListComponent implements OnInit {
       }
     });
   }
-
 
   approve(request: any) {
     const dialogRef = this.dialog.open(DialogCommentComponent, {
@@ -83,7 +82,7 @@ export class RequestListComponent implements OnInit {
         this.requestService.approve(request.id, comment).subscribe({
           next: () => {
             request.status = 'APPROVED';
-            this.snack.open('Request approved ✅', 'Close', { duration: 2000 });
+            this.snack.open('Solicitud aprobada ✅', 'Close', { duration: 2000 });
           },
           error: () => this.snack.open('Error approving request ❌', 'Close', { duration: 2000 })
         });
@@ -102,7 +101,7 @@ export class RequestListComponent implements OnInit {
         this.requestService.reject(request.id, comment).subscribe({
           next: () => {
             request.status = 'REJECTED';
-            this.snack.open('Request rejected ❌', 'Close', { duration: 2000 });
+            this.snack.open('Solicitud rechazada ❌', 'Close', { duration: 2000 });
           },
           error: () => this.snack.open('Error rejecting request ⚠️', 'Close', { duration: 2000 })
         });

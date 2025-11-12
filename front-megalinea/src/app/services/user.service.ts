@@ -3,22 +3,23 @@ import { BehaviorSubject } from 'rxjs';
 
 export type UserRole = 'REQUESTER' | 'APPROVER';
 
+export interface User {
+  name: string;
+  role: UserRole;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private currentUser = new BehaviorSubject<{ name: string; role: UserRole }>({
-    name: 'jleal',
-    role: 'REQUESTER'
-  });
+  private userSubject = new BehaviorSubject<User>({ name: 'jleal', role: 'REQUESTER' });
+  user$ = this.userSubject.asObservable();
 
-  user$ = this.currentUser.asObservable();
-
-  setUser(user: { name: string; role: UserRole }) {
-    this.currentUser.next(user);
+  setUser(user: User) {
+    this.userSubject.next(user);
   }
 
-  getUser() {
-    return this.currentUser.value;
+  getCurrentUser(): User {
+    return this.userSubject.value;
   }
 }
