@@ -1,14 +1,14 @@
 <h2 mat-dialog-title>{{ data.action | titlecase }} Request</h2>
 
 <mat-dialog-content>
-  <p>Please enter a comment before confirming:</p>
+  <p>Por favor escribe un comentario antes de continuar:</p>
   <mat-form-field appearance="outline" style="width: 100%;">
-    <mat-label>Comment</mat-label>
+    <mat-label>Comentario</mat-label>
     <textarea matInput [(ngModel)]="comment" rows="3"></textarea>
   </mat-form-field>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">Cancel</button>
-  <button mat-flat-button color="primary" (click)="onConfirm()">Confirm</button>
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-flat-button color="primary" (click)="onConfirm()">Confirmar</button>
 </mat-dialog-actions>

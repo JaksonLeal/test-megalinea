@@ -31,6 +31,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   pendingCount = 0;
   selectedUserRole: UserRole = 'REQUESTER';
   selectedUserName = '';
+  pendingRequests: any[] = [];
 
   approvers: string[] = [];
   requesters: string[] = [];
@@ -40,7 +41,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   constructor(
     private requestService: RequestService,
     private userService: UserService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadUsersFromRequests();
@@ -77,7 +78,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   loadPendingRequests(approver: string): void {
     this.requestService.getPendingRequests(approver).subscribe({
-      next: (data) => (this.pendingCount = data.length),
+      next: (data) => {
+        this.pendingRequests = data;
+        this.pendingCount = data.length;
+      },
       error: (err) => console.error('Error loading pending requests:', err)
     });
   }

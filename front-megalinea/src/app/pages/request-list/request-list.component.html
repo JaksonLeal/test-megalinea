@@ -1,14 +1,14 @@
 <mat-toolbar color="primary">
-  <span>Request Management</span>
+  <span>Administracion</span>
 </mat-toolbar>
 
 <div class="container">
   <mat-card>
     <button mat-raised-button color="primary" (click)="openNewRequestDialog()" *ngIf="userRole === 'REQUESTER'; else approverView">
-      + New Request
+      + Nueva Solicitud
     </button>
     <ng-template #approverView>
-    <mat-card-title >Request List</mat-card-title>
+    <mat-card-title >Lista de Solicitudes</mat-card-title>
     </ng-template>
     <div class="table-container">
       <table mat-table *ngIf="userRole === 'APPROVER';else requesterView" [dataSource]="requests" class="mat-elevation-z8">
@@ -63,7 +63,7 @@
       </table>
       <ng-template #requesterView>
         <p style="text-align:center; margin-top: 20px;">
-          👋 You are logged in as <b>Requester</b>. You can create new requests but not approve them.
+          👋 Tu estas logeado como <b>Requester</b>. Tu puedes crear solicitudes pero no puedes aprobarlas.
         </p>
       </ng-template>
     </div>

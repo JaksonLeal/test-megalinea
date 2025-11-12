@@ -1,10 +1,10 @@
 <mat-toolbar color="primary">
-  <span>Megalínea Requests</span>
+  <span><b>Megalínea</b></span>
   <span class="spacer"></span>
 
   <!-- Rol -->
   <mat-form-field appearance="fill">
-    <mat-label>User Role</mat-label>
+    <mat-label>Rol de Usuario</mat-label>
     <mat-select [(value)]="selectedUserRole" (selectionChange)="changeUser(selectedUserRole, selectedUserName)">
       <mat-option value="APPROVER">Approver</mat-option>
       <mat-option value="REQUESTER">Requester</mat-option>
@@ -13,9 +13,8 @@
 
   <!-- Nombre -->
   <mat-form-field appearance="fill">
-    <mat-label>User Name</mat-label>
-    <mat-select
-      [(value)]="selectedUserName"
+    <mat-label>Nombre de Usuario</mat-label>
+    <mat-select [(value)]="selectedUserName"
       (selectionChange)="changeUser(selectedUserRole, selectedUserName)"
       [disabled]="!selectedUserRole">
       <mat-option *ngFor="let name of (selectedUserRole === 'APPROVER' ? approvers : requesters)" [value]="name">
@@ -24,8 +23,30 @@
     </mat-select>
   </mat-form-field>
 
-  <!-- Notificación -->
-  <button mat-icon-button [matBadge]="pendingCount" matBadgeColor="warn">
+  <!-- Notificaciones -->
+  <button mat-icon-button 
+          [matBadge]="pendingCount" 
+          matBadgeColor="warn"
+          [matMenuTriggerFor]="notificationMenu"
+          aria-label="Notifications"
+          *ngIf="selectedUserRole === 'APPROVER'">
     <mat-icon>notifications</mat-icon>
   </button>
+
+  <!-- Menú de notificaciones -->
+  <mat-menu #notificationMenu="matMenu">
+    <ng-container *ngIf="pendingRequests.length > 0; else noRequests">
+      <button mat-menu-item *ngFor="let req of pendingRequests">
+        <mat-icon color="primary">assignment</mat-icon>
+        <span>{{ req.title }}</span>
+      </button>
+    </ng-container>
+
+    <ng-template #noRequests>
+      <button mat-menu-item disabled>
+        <mat-icon>done_all</mat-icon>
+        <span>No tiene solicitudes pendientes</span>
+      </button>
+    </ng-template>
+  </mat-menu>
 </mat-toolbar>

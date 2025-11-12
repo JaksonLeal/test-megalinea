@@ -21,7 +21,7 @@ public class RequestService {
 	}
 
 	public Request getById(Long id) {
-		return repository.findById(id).orElseThrow(() -> new RuntimeException("Request not found"));
+		return repository.findById(id).orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
 	}
 
 	public Request create(Request request) {
